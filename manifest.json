@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "Slot-Extension",
+    "version": "1.0",
+    "permissions": [
+      "cookies",
+      "tabs"
+    ],
+
+    "content_scripts": [
+        {
+        "js": ["on-element-ready.js","insert-button.js","view-page.js","create-ua.js"],
+        "matches": ["https://thongtindaotao.sgu.edu.vn/*","https://thongtindaotao.sgu.edu.vn/public/*"]
+        }
+    ]
+}
+  
