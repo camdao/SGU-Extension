@@ -117,7 +117,7 @@ function renderCoursesTable(data) {
 
 onElementReady('#WEB_XEMDANHSACHDANGKYMH', (element) => {
     element.addEventListener('click', async (e) => {
-      const frame = document.querySelector('.frame_left');
+      const frame = document.querySelector('.frame_left').children[1];
       if (frame) {
         frame.innerHTML = 'Đang tải...';
         const responseJson = await fetchStudyList();
