@@ -39,32 +39,34 @@ function renderCoursesTable(data) {
                 <div _ngcontent-cwi-c161 class="d-inline-block col-lg-6 col-md-11 col-sm-12 mb-1">
                     <!---->
                     <ng-select _ngcontent-moq-c161="" bindlabel="ten" bindvalue="ma"
-                        class="ng-select-searchable ng-select ng-select-single ng-pristine ng-valid ng-star-inserted ng-touched ng-select-bottom">
-                        <div class="ng-select-container" style="display: flex; align-items: center;user-select: none;">
-                            <div class="ng-value-container">
-                                <div class="ng-placeholder">--Chọn--</div>
-                                <!---->
-                                <!---->
-                                <div role="combobox" aria-haspopup="listbox" class="ng-input" aria-expanded="false"
-                                  style="position: absolute; left: 15px; width: 100%;">
-                                  <input
-                                    aria-autocomplete="list"
-                                    type="text"
-                                    autocorrect="off"
-                                    autocapitalize="off"
-                                    autocomplete="a237811db907"
-                                    style="box-sizing: content-box;
-                                          background: none transparent;
-                                          border: 0 none;
-                                          box-shadow: none;
-                                          outline: none;
-                                          padding: 0;
-                                          cursor: default;
-                                          width: 100%;">
-                                </div>
-                            </div>
-                            <!---->
+                        class="ng-select-searchable ng-select ng-select-single ng-pristine ng-valid ng-star-inserted ng-touched ng-select-bottom" 
+                        style="position: relative;">
+                          <div class="ng-select-container" style="display: flex; align-items: center;user-select: none;">
+                              <div class="ng-value-container">
+                                  <div class="ng-placeholder">--Chọn--</div>
+                                  <!---->
+                                  <!---->
+                                  <div role="combobox" aria-haspopup="listbox" class="ng-input" aria-expanded="false"
+                                    style="position: absolute; left: 0; width: 100%;">
+                                    <input
+                                      aria-autocomplete="list"
+                                      type="text"
+                                      autocorrect="off"
+                                      autocapitalize="off"
+                                      autocomplete="a237811db907"
+                                      style="box-sizing: content-box;
+                                            background: none transparent;
+                                            border: 0 none;
+                                            box-shadow: none;
+                                            outline: none;
+                                            padding: 0;
+                                            cursor: default;
+                                            width: 100%;">
+                                  </div>
+                              </div>
+                              <!---->
                         </div>
+
                         <!---->
                     </ng-select>
                     <!---->
@@ -121,6 +123,46 @@ onElementReady('#WEB_XEMDANHSACHDANGKYMH', (element) => {
         const responseJson = await fetchStudyList();
         const html = renderCoursesTable(responseJson.data)
         frame.innerHTML = html;
+        
+        const data = responseJson.data;
+        const courses = data.ds_nhom_to || [];
+        const monHocMap = (data.ds_mon_hoc || []).reduce((map, mh) => {
+          map[mh.ma] = mh.ten || ''; 
+          return map;
+        }, {});
+        
+        onElementReady('.ng-select-searchable', (ngSelect) => {
+          ngSelect.addEventListener('click', (e) => {
+            const selectEl = e.target.closest('.ng-select-searchable');
+            if (selectEl) {
+              if (!document.querySelector('.ng-dropdown-panel')) {
+                const dropdownHTML = `
+                  <ng-dropdown-panel role="listbox" aria-label="Options list"
+                      class="ng-dropdown-panel ng-star-inserted ng-select-bottom"
+              id="a237811db907" style="opacity:1; position:absolute; top:100%; left:0; width:100%; z-index:999;">
+                      <div class="ng-dropdown-panel-items scroll-host" style="max-height: 250px; overflow-y:auto;">
+                          <div class="total-padding" style="height: auto;"></div>
+                          <div class="scrollable-content" style="transform: translateY(0px);">
+                              ${courses.map(course => `
+                                <div class="ng-option ng-star-inserted" role="option" aria-selected="false"
+                                    id="a08f09b42daa-0">
+                                    <!----><span _ngcontent-wsu-c161="" class="ng-star-inserted">${monHocMap[course.ma_mon]}
+                                    </span><br _ngcontent-wsu-c161="" class="ng-star-inserted"><small
+                                        _ngcontent-wsu-c161="" style="font-weight: 600;" class="ng-star-inserted">Mã: ${course.ma_mon}</small>
+                                    <!---->
+                                </div>
+                              `).join('')}
+
+                          </div>
+                      </div>
+                  </ng-dropdown-panel>
+                `;
+                selectEl.insertAdjacentHTML('beforeend', dropdownHTML);
+              }
+            }
+          });
+        });
+        
       }
     });
 });
