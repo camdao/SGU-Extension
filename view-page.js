@@ -1,19 +1,3 @@
-const url = "/api/dkmh/w-locdsnhomto";
-
-const jsonData = {
-  is_CVHT: false,
-  additional: {
-    paging: {
-      limit: 99999,
-      page: 1
-    },
-    ordering: [
-      { name: "", order_type: "" }
-    ]
-  }
-};
-
-
 function renderCoursesTable(data) {
   const courses = data.ds_nhom_to || [];
   const monHocMap = (data.ds_mon_hoc || []).reduce((map, mh) => {
@@ -58,40 +42,13 @@ function renderCoursesTable(data) {
   `;
 }
 
-
-
-async function fetchStudyListPost() {
-  const authToken = sessionStorage.getItem('CURRENT_USER');
-  if (!authToken) throw new Error('Chưa đăng nhập');
-
-  const authTokenObj = JSON.parse(authToken);
-  const accessToken = authTokenObj.access_token;
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`, 
-      // 'ua': gc(isapi(url)), // nếu có
-    },
-    body: JSON.stringify(jsonData)
-  });
-
-  if (!response.ok) throw new Error('Lỗi mạng');
-
-  const data = await response.json();
-  
-  return renderCoursesTable(data.data || []);
-}
-
-
-
 onElementReady('#WEB_XEMDANHSACHDANGKYMH', (element) => {
     element.addEventListener('click', async (e) => {
       const frame = document.querySelector('.frame_left');
       if (frame) {
         frame.innerHTML = 'Đang tải...';
-        const html = await fetchStudyListPost();
+        const responseJson = await fetchStudyList();
+        const html = renderCoursesTable(responseJson.data)
         frame.innerHTML = html;
       }
     });

@@ -15,7 +15,7 @@
 
     "content_scripts": [
         {
-        "js": ["on-element-ready.js","insert-button.js","view-page.js","create-ua.js"],
+        "js": ["api/api.js","on-element-ready.js","insert-button.js","view-page.js"],
         "matches": ["https://thongtindaotao.sgu.edu.vn/*","https://thongtindaotao.sgu.edu.vn/public/*"]
         }
     ]
