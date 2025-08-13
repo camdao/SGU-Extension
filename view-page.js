@@ -38,6 +38,42 @@ function renderCoursesTable(data) {
                 </div>
                 <div _ngcontent-cwi-c161 class="d-inline-block col-lg-6 col-md-11 col-sm-12 mb-1">
                     <!---->
+                    <ng-select _ngcontent-moq-c161="" bindlabel="ten" bindvalue="ma"
+                        class="ng-select-searchable ng-select ng-select-single ng-pristine ng-valid ng-star-inserted ng-touched ng-select-bottom">
+                        <div class="ng-select-container" style="display: flex; align-items: center;user-select: none;">
+                            <div class="ng-value-container">
+                                <div class="ng-placeholder">--Chọn--</div>
+                                <!---->
+                                <!---->
+                                <div role="combobox" aria-haspopup="listbox" class="ng-input" aria-expanded="false"
+                                  style="position: absolute; left: 15px; width: 100%;">
+                                  <input
+                                    aria-autocomplete="list"
+                                    type="text"
+                                    autocorrect="off"
+                                    autocapitalize="off"
+                                    autocomplete="a237811db907"
+                                    style="box-sizing: content-box;
+                                          background: none transparent;
+                                          border: 0 none;
+                                          box-shadow: none;
+                                          outline: none;
+                                          padding: 0;
+                                          cursor: default;
+                                          width: 100%;">
+                                </div>
+                            </div>
+                            <!---->
+                        </div>
+                        <!---->
+                    </ng-select>
+                    <!---->
+                    <!---->
+                    <!---->
+                    <!---->
+                    <!---->
+                    <!---->
+                    <!---->
                 </div>
           </div>
       <h6 class="mb-0 pl-2 py-2 mt-3 table-active">Danh sách môn học mở cho đăng ký</h6>
