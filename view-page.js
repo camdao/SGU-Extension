@@ -21,7 +21,6 @@ function renderCoursesTable(data) {
                       class="ng-select ng-select-single ng-pristine ng-valid ng-select-bottom ng-touched">
                         <div class="ng-select-container ng-has-value" style="display: flex; align-items: center; justify-content: center; user-select: none;">
                           <div class="ng-value-container" style="display: flex; flex:1">
-                            <div class="ng-placeholder"></div>
                             <div class="ng-value ng-star-inserted">
                               <span class="ng-value-label ng-star-inserted"> 
                                 Lọc theo môn học
@@ -49,6 +48,7 @@ function renderCoursesTable(data) {
                                   <div role="combobox" aria-haspopup="listbox" class="ng-input" aria-expanded="false"
                                     style="position: absolute; left: 0; width: 100%;">
                                     <input
+                                      class="inputCss"
                                       aria-autocomplete="list"
                                       type="text"
                                       autocorrect="off"
@@ -60,7 +60,7 @@ function renderCoursesTable(data) {
                                             box-shadow: none;
                                             outline: none;
                                             padding: 0;
-                                            cursor: default;
+                                            cursor: text;
                                             width: 100%;">
                                   </div>
                               </div>
@@ -134,35 +134,158 @@ onElementReady('#WEB_XEMDANHSACHDANGKYMH', (element) => {
         onElementReady('.ng-select-searchable', (ngSelect) => {
           ngSelect.addEventListener('click', (e) => {
             const selectEl = e.target.closest('.ng-select-searchable');
-            if (selectEl) {
-              if (!document.querySelector('.ng-dropdown-panel')) {
-                const dropdownHTML = `
-                  <ng-dropdown-panel role="listbox" aria-label="Options list"
-                      class="ng-dropdown-panel ng-star-inserted ng-select-bottom"
-              id="a237811db907" style="opacity:1; position:absolute; top:100%; left:0; width:100%; z-index:999;">
-                      <div class="ng-dropdown-panel-items scroll-host" style="max-height: 250px; overflow-y:auto;">
-                          <div class="total-padding" style="height: auto;"></div>
-                          <div class="scrollable-content" style="transform: translateY(0px);">
-                              ${courses.map(course => `
-                                <div class="ng-option ng-star-inserted" role="option" aria-selected="false"
-                                    id="a08f09b42daa-0">
-                                    <!----><span _ngcontent-wsu-c161="" class="ng-star-inserted">${monHocMap[course.ma_mon]}
-                                    </span><br _ngcontent-wsu-c161="" class="ng-star-inserted"><small
-                                        _ngcontent-wsu-c161="" style="font-weight: 600;" class="ng-star-inserted">Mã: ${course.ma_mon}</small>
-                                    <!---->
-                                </div>
-                              `).join('')}
+            const input = document.querySelector('.inputCss');
+            const placeholder = document.querySelector('.ng-placeholder');
 
-                          </div>
+            if (!selectEl) return;
+        
+            document.querySelectorAll('.ng-dropdown-panel').forEach(d => d.remove());
+        
+            const dropdownHTML = `
+              <ng-dropdown-panel role="listbox" aria-label="Options list"
+                  class="ng-dropdown-panel ng-star-inserted ng-select-bottom"
+                  style="opacity:1; position:absolute; top:100%; left:0; width:100%; z-index:999;">
+                  <div class="ng-dropdown-panel-items scroll-host" style="max-height: 250px; overflow-y:auto;">
+                      <div class="total-padding" style="height: auto;"></div>
+                      <div class="scrollable-content" style="transform: translateY(0px);">
+                          ${courses.map(course => `
+                            <div class="ng-option ng-star-inserted" role="option" aria-selected="false" style="cursor:pointer;">
+                                <span>${monHocMap[course.ma_mon]}</span><br>
+                                <small style="font-weight: 600;">Mã: ${course.ma_mon}</small>
+                                <input type="hidden" class="course-code" value="${course.ma_mon}">
+                            </div>
+                          `).join('')}
                       </div>
-                  </ng-dropdown-panel>
-                `;
-                selectEl.insertAdjacentHTML('beforeend', dropdownHTML);
+                  </div>
+              </ng-dropdown-panel>
+            `;
+            selectEl.insertAdjacentHTML('beforeend', dropdownHTML);
+        
+            selectEl.querySelectorAll('.ng-option').forEach(option => {
+              option.addEventListener('mouseenter', () => option.classList.add('ng-option-marked'));
+              option.addEventListener('mouseleave', () => option.classList.remove('ng-option-marked'));
+            });
+            
+            selectEl.querySelectorAll('.ng-option').forEach(option => {
+              option.addEventListener('mouseenter', () => option.classList.add('ng-option-marked'));
+              option.addEventListener('mouseleave', () => option.classList.remove('ng-option-marked'));
+            
+              option.addEventListener('click', () => {
+                const value = option.querySelector('span').textContent;
+                const code = option.querySelector('.course-code').value;
+                
+                input.value=''
+                placeholder.textContent = value;
+                placeholder.style.display = '';
+
+                const filteredCourses = courses.filter(c => c.ma_mon === code); 
+                const tableBody = document.querySelector('.table tbody');
+                tableBody.innerHTML = filteredCourses.map(course => `
+                  <tr class="text-muted text-center">
+                    <td>${course.ma_mon}</td>
+                    <td class="text-left">${monHocMap[course.ma_mon] || course.ten_mon || ''}</td>
+                    <td>${course.nhom_to || ''}</td>
+                    <td>${course.to || ''}</td>
+                    <td style="font-weight: 600;">${course.so_tc}</td>
+                    <td>${course.lop}</td>
+                    <td>${course.sl_cp}</td>
+                    <td class="text-danger">${course.sl_cl}</td>
+                    <td class="text-left"><small>${course.tkb ? course.tkb.replace(/<hr>/g, '<br>') : ''}</small></td>
+                  </tr>
+                `).join('');
+                
+                document.querySelectorAll('.ng-dropdown-panel').forEach(d => d.remove());
+              });
+            });
+
+            const closeDropdown = (evt) => {
+              if (!selectEl.contains(evt.target)) {
+                document.querySelectorAll('.ng-dropdown-panel').forEach(d => d.remove());
+                document.removeEventListener('click', closeDropdown);
               }
-            }
+            };
+            setTimeout(() => document.addEventListener('click', closeDropdown), 0);
           });
         });
         
+        const input = document.querySelector('.inputCss');
+        const selectEl = document.querySelector('.ng-select-searchable');
+        const placeholder = document.querySelector('.ng-placeholder');
+
+        input.addEventListener('input', (e) => {
+          const value = e.target.value;
+          if (placeholder) placeholder.style.display = value.trim() !== '' ? 'none' : '';
+        });
+
+        input.addEventListener('input', () => {
+          
+          const query = input.value.toLowerCase();
+          
+          const seen = new Set();
+          const filteredCourses = courses.filter(c => {
+            const name = monHocMap[c.ma_mon] || '';
+            const match = c.ma_mon.toLowerCase().includes(query) || name.toLowerCase().includes(query);
+            if (match && !seen.has(c.ma_mon)) {
+              seen.add(c.ma_mon);
+              return true;
+            }
+            return false;
+          });
+
+          document.querySelectorAll('.ng-dropdown-panel').forEach(d => d.remove());
+
+          const dropdownHTML = `
+            <ng-dropdown-panel role="listbox" aria-label="Options list"
+                class="ng-dropdown-panel ng-star-inserted ng-select-bottom"
+                style="opacity:1; position:absolute; top:100%; left:0; width:100%; z-index:999;">
+                <div class="ng-dropdown-panel-items scroll-host" style="max-height: 250px; overflow-y:auto;">
+                    <div class="scrollable-content" style="transform: translateY(0px);">
+                        ${filteredCourses.map(course => `
+                          <div class="ng-option ng-star-inserted" role="option" aria-selected="false" style="cursor:pointer;" data-code="${course.ma_mon}">
+                              <span>${monHocMap[course.ma_mon]}</span><br>
+                              <small style="font-weight: 600;">Mã: ${course.ma_mon}</small>
+                          </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </ng-dropdown-panel>
+          `;
+          
+          selectEl.insertAdjacentHTML('beforeend', dropdownHTML);
+
+          selectEl.querySelectorAll('.ng-option').forEach(option => {
+            option.addEventListener('mouseenter', () => option.classList.add('ng-option-marked'));
+            option.addEventListener('mouseleave', () => option.classList.remove('ng-option-marked'));
+            option.addEventListener('click', () => {
+              const value = option.querySelector('span').textContent;
+              const code = option.dataset.code;
+
+              input.value=''
+              placeholder.textContent = value;
+              placeholder.style.display = '';
+
+              const tableBody = document.querySelector('.table tbody');
+              const matched = courses.filter(c => c.ma_mon === code);
+              tableBody.innerHTML = matched.map(c => `
+                <tr class="text-muted text-center">
+                  <td>${c.ma_mon}</td>
+                  <td class="text-left">${monHocMap[c.ma_mon] || c.ten_mon || ''}</td>
+                  <td>${c.nhom_to || ''}</td>
+                  <td>${c.to || ''}</td>
+                  <td style="font-weight: 600;">${c.so_tc}</td>
+                  <td>${c.lop}</td>
+                  <td>${c.sl_cp}</td>
+                  <td class="text-danger">${c.sl_cl}</td>
+                  <td class="text-left"><small>${c.tkb ? c.tkb.replace(/<hr>/g,'<br>') : ''}</small></td>
+                </tr>
+              `).join('');
+
+              document.querySelectorAll('.ng-dropdown-panel').forEach(d => d.remove());
+            });
+          });
+        });
+
+
       }
     });
 });
